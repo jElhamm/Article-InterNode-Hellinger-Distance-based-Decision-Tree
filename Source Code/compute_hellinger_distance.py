@@ -34,3 +34,26 @@ def compute_hellinger_distance(features, labels, num_bins):
         feature = features[:, f]
         dists = []
     
+            # Calculate the Hellinger distance for each threshold
+        for threshold in thresholds[:, f]:
+            Tlplus = np.sum((feature <= threshold) & (labels == 1))
+            Tlminus = np.sum((feature <= threshold) & (labels == 0))
+            Trplus = np.sum((feature > threshold) & (labels == 1))
+            Trminus = np.sum((feature > threshold) & (labels == 0))
+            
+            # Calculate the Hellinger distance for current split
+            dist = (np.sqrt(Tlplus / Tplus) - np.sqrt(Tlminus / Tminus)) ** 2 + \
+                   (np.sqrt(Trplus / Tplus) - np.sqrt(Trminus / Tminus)) ** 2
+            dists.append(dist)
+        distances.append(dists)
+    
+    distances = np.array(distances)
+    
+    # Determine the feature and threshold that maximize the Hellinger distance
+    max_distances = np.max(distances, axis=1)
+    feature = np.argmax(max_distances)
+    distance = max_distances[feature]
+    threshold = thresholds[np.argmax(distances[feature]), feature]
+    
+    return feature, distance, threshold
+    
