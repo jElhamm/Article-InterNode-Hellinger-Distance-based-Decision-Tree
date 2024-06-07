@@ -46,3 +46,22 @@ def fit_Hellinger_tree(features, labels, numBins=100, cutoff=None, memSplit=1, m
     if labels.shape[0] != numInstances:                                                                             # Check if the number of labels matches the number of instances
         raise ValueError("Number of instances in feature matrix and label matrix do not match")
     
+        labelIDs = np.unique(labels)                                                                                    # Ensure labels are binary (0 or 1)
+    if len(labelIDs) != 2 or not np.array_equal(labelIDs, [0, 1]):
+        raise ValueError("Labels must be either 0 or 1; Label array may only contain a single label value")
+    if cutoff is None:                                                                                              # Set default cutoff value if not provided
+        cutoff = 10 if numInstances > 10 else 1
+    if numBins <= 0:                                                                                                # Validate input parameters
+        raise ValueError("numBins must be positive")
+    if cutoff <= 0:
+        raise ValueError("cutoff must be positive")
+    if memSplit <= 0:
+        raise ValueError("memSplit must be positive")
+    if memThresh <= 0:
+        raise ValueError("memThresh must be positive")
+
+    
+    model = HellingerTreeNode()                                                                                     # Initialize the model as a HellingerTreeNode
+    model = HDDT(features, labels, model, numBins, cutoff, memThresh, memSplit)                                     # Train the model using the HDDT algorithm
+    return model
+    
