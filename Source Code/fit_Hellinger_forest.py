@@ -23,3 +23,12 @@ def fit_Hellinger_forest(features, labels, numTrees, numBins=100, minFeatureRati
     if labels.shape[0] != numInstances:                                                                          # Check if the number of labels matches the number of instances
         raise ValueError("Number of instances in feature matrix and label matrix do not match")
     
+    if len(labelIDs) != 2 or not (0 in labelIDs and 1 in labelIDs):
+        raise ValueError("Labels must be either 0 or 1; Label array may only contain a single label value")
+    if numBins < 1:                                                                                              # Validate the number of bins
+        raise ValueError("Number of bins must be 1 or larger")
+    if minFeatureRatio > 1 or minFeatureRatio <= 0:                                                              # Validate the feature ratio
+        raise ValueError("minFeatureRatio must be between (0 and 1]")
+    if cutoff is None:                                                                                           # Set default cutoff value if not provided
+        cutoff = 10 if numInstances > 10 else 1
+    
