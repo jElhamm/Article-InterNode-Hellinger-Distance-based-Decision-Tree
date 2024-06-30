@@ -32,3 +32,17 @@ def fit_Hellinger_forest(features, labels, numTrees, numBins=100, minFeatureRati
     if cutoff is None:                                                                                           # Set default cutoff value if not provided
         cutoff = 10 if numInstances > 10 else 1
     
+    model = []
+    for i in range(numTrees):                                                                                    # Grow each tree in the forest
+        if printCount:
+            print(f"Growing Tree Number: {i+1}")
+
+        # Randomly select a subset of features for this tree
+        reducedFeaturesIndices = random.sample(range(numFeatures), random.randint(ceil(minFeatureRatio * numFeatures), numFeatures))
+        reducedFeatures = features[:, reducedFeaturesIndices]
+
+        # Fit the tree with the selected features and add to the model
+        tree = HDDT(reducedFeatures, labels, HellingerTreeNode(), numBins, cutoff, memThresh, memSplit)
+        model.append((tree, reducedFeaturesIndices))
+
+    return model
